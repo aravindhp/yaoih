@@ -1,0 +1,17 @@
+#!/bin/sh
+set -e
+
+usage() {
+      echo "Usage: $0 \"oc login https://api.ci.openshift.org --token=yourtoken\""
+}
+
+if [ -z "$1" ]; then
+    echo "missing oc login command"
+    exit 1
+fi
+
+$1
+
+podman login --authfile ~/.docker/config.json -u $(oc whoami) -p $(oc whoami -t) registry.svc.ci.openshift.org
+oc registry login --to=/tmp/reg-svc-ps.yaml
+cat /tmp/reg-svc-ps.yaml

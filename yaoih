@@ -1,0 +1,109 @@
+#!/bin/sh
+set -eo pipefail
+
+usage() {
+      echo "Usage: $0 (-r <release> | -v <version>)  -c <location of cloud specific install-config.yaml> -d <install dir> -n <network config> [-x] <first delete the specified cluster>"
+}
+
+exit_error() {
+  usage
+  exit 1
+}
+
+if [ -z "$INSTALLER_BIN" ]; then
+    echo "missing -r INSTALLER_BIN environment variable"
+    exit_error
+fi
+
+delete=0
+while getopts "r:v:c:d:n:x" opt; do
+  case ${opt} in
+    r ) # specify to pick the latest OpenShift <release> from https://openshift-release.svc.ci.openshift.org/
+      release=$OPTARG
+      ;;
+    v ) # specify a OpenShift <version> from https://openshift-release.svc.ci.openshift.org/
+      version=$OPTARG
+      ;;
+    c ) # cloud specific install-config.yaml
+      if [ -d $OPTARG ]; then
+        echo "-c $OPTARG cannot be a directory"
+      fi
+      config=$OPTARG
+      ;;
+    d ) # cluster installation dir
+      if [ ! -d $OPTARG ]; then
+        echo "-c $OPTARG cannot be a file"
+      fi
+      clusterdir=$OPTARG
+      ;;
+    n ) # cluster-network-03-config.yml or calico manifest directory
+      networkconfig=$OPTARG
+      ;;
+    x ) # delete the cluster before creation
+      delete=1
+      ;;
+    \? )
+      usage
+      exit 0
+      ;;
+    : )
+      echo "Invalid option: ${OPTARG} requires an argument" 1>&2
+      exit_error
+      ;;
+    * )
+      echo "Invalid option: ${OPTARG}" 1>&2
+      exit_error
+      ;;
+  esac
+done
+
+if [ -z "$release" -a -z "$version" ]; then
+    echo "specify -r or -v option"
+    exit_error
+fi
+
+if [ -z "$config" ]; then
+    echo "missing -c option"
+    exit_error
+fi
+
+if [ -z "$clusterdir" ]; then
+    echo "missing -d option"
+    exit_error
+fi
+
+if [ -z "$networkconfig" ]; then
+    echo "missing -n option"
+    exit_error
+fi
+
+bindir=$INSTALLER_BIN
+installcmd="${bindir}/openshift-install --dir=${clusterdir} --log-level debug "
+
+if [ -z "$version" ]; then
+  version=$(curl -s https://openshift-release.svc.ci.openshift.org/api/v1/releasestream/$release/latest | jq '.pullSpec')
+  version=${version%\"}
+  version=${version#*:}
+fi
+echo "Using version $version"
+
+pushd $bindir
+
+oc adm release extract --command=openshift-install registry.svc.ci.openshift.org/ocp/release:$version
+oc adm release extract --command=oc registry.svc.ci.openshift.org/ocp/release:$version
+#cp oc ~/.local/bin/
+
+if [ "$delete" -eq "1" ]; then
+    $installcmd destroy cluster
+fi
+
+rm -rf $clusterdir/*
+cp $config $clusterdir
+
+echo $version > $clusterdir/version
+
+$installcmd create manifests
+cp $networkconfig $clusterdir/manifests
+$installcmd create cluster
+
+popd
