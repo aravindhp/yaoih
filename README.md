@@ -46,7 +46,7 @@ spec:
           hostPrefix: 23
 ```
 
-## [-x] first delete the specified cluster
+## -x first delete the specified cluster
 Optional argument that can be used if you want to first delete the cluster before creating a new one.
 
 ## INSTALLER_BIN
