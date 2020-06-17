@@ -1,16 +1,16 @@
 # Yet Another OpenShift Install Helper
-yaoih is a bash script that automates bringing up an Hybrid OVN OpenShift 4.x cluster using an installer from the 
-OpenShift [release](https://openshift-release.svc.ci.openshift.org/) page.
+yaoih is a bash script that automates bringing up an OpenShift 4.x cluster using an installer from the OpenShift
+[mirror](https://mirror.openshift.com/pub/openshift-v4/clients/).
 
 ```
-yaoih (-r <release> | -v <version>) -c <location of cloud specific install-config.yaml> -d <install dir> -n <network config> [-x] <first delete the specified cluster>
+yaoih (-r <release> | -p <version>) -c <location of cloud specific install-config.yaml> -d <install dir> -n <network config> [-x] <first delete the specified cluster>
 ```
 ## -r release
-The `openshift-install` release version to be used. Example: 4.5.0-0.ci will result in the latest 4.5 CI installer to be
+The `openshift-install` release version to be used. Example: 4.4.4 or 4.4
 picked that has been marked green on the release page.
 
 ## -v version
-The exact `openshift-install` release version to be used. Example: 4.5.0-0.nightly-2020-04-15-172400. 
+The exact `openshift-install` release version to be used. Example: 4.6.0-0.nightly-2020-06-16-214732 or latest-4.6
 
 Either -r or -v needs to be specified. -v takes precedence over -r.
 

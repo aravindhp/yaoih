@@ -2,7 +2,7 @@
 set -eo pipefail
 
 usage() {
-      echo "Usage: $0 (-r <release> | -v <version>)  -c <location of cloud specific install-config.yaml> -d <install dir> -n <network config> [-x] <first delete the specified cluster>"
+      echo "Usage: $0 (-r <release> | -p <version>)  -c <location of cloud specific install-config.yaml> -d <install dir> -n <network config> [-x] <first delete the specified cluster>"
 }
 
 exit_error() {
