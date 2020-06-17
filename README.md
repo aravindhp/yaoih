@@ -21,7 +21,8 @@ Specify the `install-config.yaml` that has been generated using the `openshift-i
 The directory that will be used by `openshift-install`.
 
 ## -n network config file
-This is the hybrid OVN Network manifest that will be used by `openshift-install`. Example:
+This needs to be used only if you are trying to change network configuration.
+An example hybrid OVN Network manifest that will be used by `openshift-install` is show below:
 ```
 apiVersion: operator.openshift.io/v1
 kind: Network

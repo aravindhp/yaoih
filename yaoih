@@ -72,11 +72,6 @@ if [ -z "$clusterdir" ]; then
     exit_error
 fi
 
-if [ -z "$networkconfig" ]; then
-    echo "missing -n option"
-    exit_error
-fi
-
 bindir=$INSTALLER_BIN
 
 echo "Using $version"
@@ -96,8 +91,11 @@ cp $config $clusterdir
 
 echo $version > $clusterdir/version
 
-$installcmd create manifests
-cp $networkconfig $clusterdir/manifests
+if [ "$networkconfig" ]; then
+    $installcmd create manifests
+    cp $networkconfig $clusterdir/manifests
+fi
+
 $installcmd create cluster
 
 popd
