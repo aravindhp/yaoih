@@ -6,13 +6,14 @@ yaoih is a bash script that automates bringing up an OpenShift 4.x cluster using
 yaoih (-r <release> | -p <version>) -c <location of cloud specific install-config.yaml> -d <install dir> -n <network config> [-x] <first delete the specified cluster>
 ```
 ## -r release
-The `openshift-install` release version to be used. Example: 4.4.4 or 4.4
-picked that has been marked green on the release page.
+The `openshift-install` [release version](https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/) to be used.
+Example: 4.4.4 or latest-4.4
 
-## -v version
-The exact `openshift-install` release version to be used. Example: 4.6.0-0.nightly-2020-06-16-214732 or latest-4.6
+## -p version
+The `openshift-install` [preview version](https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp-dev-preview/)
+to be used. Example: 4.6.0-0.nightly-2020-06-16-214732 or latest-4.6
 
-Either -r or -v needs to be specified. -v takes precedence over -r.
+Either -r or -p needs to be specified. -r takes precedence over -p.
 
 ## -c location of cloud specific install-config.yaml
 Specify the `install-config.yaml` that has been generated using the `openshift-install create install-config` command.

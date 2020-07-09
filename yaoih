@@ -18,10 +18,10 @@ fi
 delete=0
 while getopts "r:p:c:d:n:x" opt; do
   case ${opt} in
-    r ) # specify to pick the latest OpenShift <release> from https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/
+    r ) # specify an OpenShift <release> from https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/
       version=https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/$OPTARG
       ;;
-    p ) # specify a OpenShift <version> from https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp-dev-preview/
+    p ) # specify an OpenShift <preview> from https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp-dev-preview/
       version=https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp-dev-preview/$OPTARG
       ;;
     c ) # cloud specific install-config.yaml
