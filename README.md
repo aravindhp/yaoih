@@ -13,7 +13,8 @@ Example: 4.4.4 or latest-4.4
 The `openshift-install` [preview version](https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp-dev-preview/)
 to be used. Example: 4.6.0-0.nightly-2020-06-16-214732 or latest-4.6
 
-Either -r or -p needs to be specified. -r takes precedence over -p.
+Either -r or -p needs to be specified or the existing binary in [$INSTALLER_BIN](#INSTALLER_BIN) will be used. If
+neither -r or -p is specified and there is no exisiting binary, an error will be thrown. The -r takes precedence over -p.
 
 ## -c location of cloud specific install-config.yaml
 Specify the `install-config.yaml` that has been generated using the `openshift-install create install-config` command.

@@ -57,9 +57,13 @@ while getopts "r:p:c:d:n:x" opt; do
   esac
 done
 
+bindir=$INSTALLER_BIN
+
 if [ -z "$release" -a -z "$version" ]; then
-    echo "specify -r or -p option"
-    exit_error
+    if [ ! -f $bindir/openshift-install ]; then
+      echo "missing openshift-install. specify -r or -d or ensure $bindir/openshift-install exists"
+      error exit
+    fi
 fi
 
 if [ -z "$config" ]; then
@@ -72,13 +76,12 @@ if [ -z "$clusterdir" ]; then
     exit_error
 fi
 
-bindir=$INSTALLER_BIN
-
-echo "Using $version"
-
 pushd $bindir
 
-curl ${version}/openshift-install-linux.tar.gz | tar -zx openshift-install
+if [ -n "$release" -o -n "$version" ]; then
+    echo "Using $version"
+    curl ${version}/openshift-install-linux.tar.gz | tar -zx openshift-install
+fi
 
 installcmd="${bindir}/openshift-install --dir=${clusterdir} --log-level debug "
 
