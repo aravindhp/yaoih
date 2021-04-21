@@ -96,7 +96,7 @@ echo $version > $clusterdir/version
 
 if [ "$networkconfig" ]; then
     $installcmd create manifests
-    cp $networkconfig $clusterdir/manifests
+    cp $networkconfig $clusterdir/manifests/cluster-network-03-config.yml
 fi
 
 $installcmd create cluster
