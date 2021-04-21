@@ -12,6 +12,6 @@ fi
 
 $1
 
-podman login --authfile ~/.docker/config.json -u $(oc whoami) -p $(oc whoami -t) registry.svc.ci.openshift.org
+podman login --authfile ~/.docker/config.json -u $(oc whoami) -p $(oc whoami -t) registry.ci.openshift.org
 oc registry login --to=/tmp/reg-svc-ps.yaml
 cat /tmp/reg-svc-ps.yaml
