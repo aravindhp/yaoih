@@ -2,7 +2,7 @@
 set -eo pipefail
 
 usage() {
-      echo "Usage: $0 (-r <release> | -p <version>)  -c <location of cloud specific install-config.yaml> -d <install dir> -n <network config> [-x] <first delete the specified cluster>"
+      echo "Usage: $0 (-r <release> | -p <preview> | -v <preview-verison>)  -c <location of cloud specific install-config.yaml> -d <install dir> -n <network config> [-x] <first delete the specified cluster>"
 }
 
 exit_error() {
@@ -16,13 +16,18 @@ if [ -z "$INSTALLER_BIN" ]; then
 fi
 
 delete=0
-while getopts "r:p:c:d:n:x" opt; do
+while getopts "r:p:v:c:d:n:x" opt; do
   case ${opt} in
     r ) # specify an OpenShift <release> from https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/
-      version=https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/$OPTARG
+      release=https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/$OPTARG
       ;;
-    p ) # specify an OpenShift <preview> from https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp-dev-preview/
-      version=https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp-dev-preview/$OPTARG
+    p ) # specify an OpenShift CI stream from https://openshift-release.apps.ci.l2s4.p1.openshiftapps.com/. Ex: 4.14.0-0.ci
+      preview=$(curl -s https://openshift-release.apps.ci.l2s4.p1.openshiftapps.com/api/v1/releasestream/$OPTARG/latest | jq '.pullSpec')
+      preview=${preview%\"}
+      preview=${preview#*:}
+      ;;
+    v ) # specify a OpenShift CI stream version from https://openshift-release.apps.ci.l2s4.p1.openshiftapps.com/. Ex: 4.14.0-0.ci-2023-03-20-081138
+      preview=$OPTARG
       ;;
     c ) # cloud specific install-config.yaml
       if [ -d $OPTARG ]; then
@@ -61,9 +66,9 @@ done
 
 bindir=$INSTALLER_BIN
 
-if [ -z "$release" -a -z "$version" ]; then
+if [ -z "$release" -a -z "$preview" ]; then
     if [ ! -f $bindir/openshift-install ]; then
-      echo "missing openshift-install. specify -r or -d or ensure $bindir/openshift-install exists"
+      echo "missing openshift-install. specify -r or -p or -v to ensure $bindir/openshift-install exists"
       error exit
     fi
 fi
@@ -79,13 +84,18 @@ if [ -z "$clusterdir" ]; then
 fi
 
 pushd $bindir
-
-if [ -n "$release" -o -n "$version" ]; then
-    echo "Using $version"
-    curl ${version}/openshift-install-linux.tar.gz | tar -zx openshift-install
+if [ -n "$release" ]; then
+    echo "Using $release"
+    curl ${release}/openshift-install-linux.tar.gz | tar -zx openshift-install
+elif [ -n "$preview" ]; then
+    echo "Using $preview"
+    oc adm release extract --command=openshift-install registry.ci.openshift.org/ocp/release:$preview
+    oc adm release extract --command=oc registry.ci.openshift.org/ocp/release:$preview
 fi
 
-installcmd="${bindir}/openshift-install --dir=${clusterdir} --log-level debug "
+${bindir}/openshift-install version
+
+installcmd="${bindir}/openshift-install --dir=${clusterdir} "
 
 if [ "$delete" -eq "1" ]; then
     $installcmd destroy cluster

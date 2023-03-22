@@ -7,14 +7,19 @@ yaoih (-r <release> | -p <version>) -c <location of cloud specific install-confi
 ```
 ## -r release
 The `openshift-install` [release version](https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/) to be used.
-Example: 4.4.4 or latest-4.4
+Example: `4.4.4` or `latest-4.11`
 
 ## -p version
-The `openshift-install` [preview version](https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp-dev-preview/)
-to be used. Example: 4.6.0-0.nightly-2020-06-16-214732 or latest-4.6
+The `openshift-install` [CI](https://openshift-release.apps.ci.l2s4.p1.openshiftapps.com/) stream to be used. This will
+pick the latest version in that stream. Example: `4.14.0-0.ci`
 
-Either -r or -p needs to be specified or the existing binary in [$INSTALLER_BIN](#INSTALLER_BIN) will be used. If
-neither -r or -p is specified and there is no exisiting binary, an error will be thrown. The -r takes precedence over -p.
+## -v version
+The `openshift-install` [CI](https://openshift-release.apps.ci.l2s4.p1.openshiftapps.com/) version to be used.
+Example: `4.14.0-0.ci-2023-03-20-081138`
+
+Either -r or -p or -v needs to be specified or the existing binary in [$INSTALLER_BIN](#INSTALLER_BIN) will be used. If
+neither -r or -p or -v is specified and there is no existing binary, an error will be thrown. The -r takes precedence
+over -p or -v. -v takes precedence over -p.
 
 ## -c location of cloud specific install-config.yaml
 Specify the `install-config.yaml` that has been generated using the `openshift-install create install-config` command.
