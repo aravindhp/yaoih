@@ -27,12 +27,14 @@ while getopts "r:p:c:d:n:x" opt; do
     c ) # cloud specific install-config.yaml
       if [ -d $OPTARG ]; then
         echo "-c $OPTARG cannot be a directory"
+        exit 1
       fi
       config=$OPTARG
       ;;
     d ) # cluster installation dir
       if [ ! -d $OPTARG ]; then
-        echo "-c $OPTARG cannot be a file"
+        echo "-d $OPTARG cannot be a file"
+        exit 1
       fi
       clusterdir=$OPTARG
       ;;
