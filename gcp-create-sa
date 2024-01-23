@@ -1,0 +1,28 @@
+local SERVICE_ACCOUNT_NAME=$1
+
+# Create the service account
+gcloud iam service-accounts create "$SERVICE_ACCOUNT_NAME" --display-name="$SERVICE_ACCOUNT_NAME"
+
+# Extract details about the new service account: the email address, and project_id
+# example: SERVICE_ACCOUNT_EMAIL="jsmith-development@openshift-gce-devel.iam.gserviceaccount.com"
+# example: PROJECT_ID="openshift-gce-devel"
+
+SERVICE_ACCOUNT_JSON="$(gcloud iam service-accounts list --format json | jq -r '.[] | select(.name | match("/\(env.SERVICE_ACCOUNT_NAME)@"))')"
+SERVICE_ACCOUNT_EMAIL="$(jq -r .email <<< "$SERVICE_ACCOUNT_JSON")"
+PROJECT_ID="$(jq -r .projectId <<< "$SERVICE_ACCOUNT_JSON")"
+
+# Grant the permissions to the role
+# Note: The following (until 'END_OF_ROLES') is all one command
+while IFS= read -r ROLE_TO_ADD ; do
+   gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$SERVICE_ACCOUNT_EMAIL" --role="$ROLE_TO_ADD"
+done << END_OF_ROLES
+roles/compute.admin
+roles/iam.securityAdmin
+roles/iam.serviceAccountAdmin
+roles/iam.serviceAccountKeyAdmin
+roles/iam.serviceAccountUser
+roles/storage.admin
+roles/dns.admin
+roles/compute.loadBalancerAdmin
+roles/iam.roleViewer
+END_OF_ROLES
